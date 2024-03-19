@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Invoice - {{ invoice.number }}</title>
+    <style>
+      /* Basic invoice styling */
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 10px;
+        border: 1px solid #ddd;
+      }
+
+      .header {
+        text-align: center;
+        font-size: 1.2em;
+      }
+
+      .items th:first-child,
+      .items td:first-child {
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <h1>Invoice</h1>
+      <p>Invoice No: {{ invoice.number }}</p>
+      <p>Date: {{ invoice.date }}</p>
+    </header>
+
+    <section>
+      <h2>Bill To:</h2>
+      <table>
+        <tr>
+          <th>Company Name</th>
+          <td>{{ invoice.bill_to.company }}</td>
+        </tr>
+        <tr>
+          <th>Contact Name</th>
+          <td>{{ invoice.bill_to.name }}</td>
+        </tr>
+        <tr>
+          <th>Address</th>
+          <td>{{ invoice.bill_to.address }}</td>
+        </tr>
+        {% if invoice.bill_to.email %}
+        <tr>
+          <th>Email</th>
+          <td>{{ invoice.bill_to.email }}</td>
+        </tr>
+        {% endif %}
+      </table>
+    </section>
+
+    <section>
+      <h2>Ship To (if different):</h2>
+      <table>
+        <tr>
+          <th>Company Name</th>
+          <td>{{ invoice.ship_to.company or 'N/A' }}</td>
+        </tr>
+        <tr>
+          <th>Contact Name</th>
+          <td>{{ invoice.ship_to.name or 'N/A' }}</td>
+        </tr>
+        <tr>
+          <th>Address</th>
+          <td>{{ invoice.ship_to.address or 'N/A' }}</td>
+        </tr>
+        {% if invoice.ship_to.email %}
+        <tr>
+          <th>Email</th>
+          <td>{{ invoice.ship_to.email or 'N/A' }}</td>
+        </tr>
+        {% endif %}
+      </table>
+    </section>
+
+    <section class="items">
+      <h2>Items</h2>
+      <table>
+        <tr>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Unit Price</th>
+          <th>Amount</th>
+        </tr>
+        {% for item in invoice.items %}
+        <tr>
+          <td>{{ item.description }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.unit_price | format_currency }}</td>
+          <td>{{ item.value | format_currency }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <th colspan="3">Subtotal</th>
+          <td>{{ invoice.subtotal | format_currency }}</td>
+        </tr>
+        {% if invoice.tax_rate %}
+        <tr>
+          <th colspan="3">Tax ({{ invoice.tax_rate * 100 }}%)</th>
+          <td>{{ invoice.tax | format_currency }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+          <th colspan="3">Total</th>
+          <td>{{ invoice.total | format_currency }}</td>
+        </tr>
+      </table>
+    </section>
+
+    <footer>
+      <p>Thank you for your business!</p>
+    </footer>
+  </body>
+</html>
